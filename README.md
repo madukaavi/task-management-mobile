@@ -1,56 +1,155 @@
-# Welcome to your Expo app 👋
+# Task Management Mobile App
 
-This is an [Expo](https://expo.dev) project created with [`create-expo-app`](https://www.npmjs.com/package/create-expo-app).
+A mobile task management application built with **React Native**, **Expo**, and **TypeScript**. It connects to a REST API to let users create an account, sign in, and manage their tasks from an Android or iOS device.
 
-## Get started
+## Features
 
-1. Install dependencies
+- User registration and login
+- JWT-based authentication
+- Secure token storage with `expo-secure-store`
+- Create, view, update, complete, and delete tasks
+- Search tasks
+- Paginated task list
+- Loading indicators and toast notifications
+- Expo Router navigation
+
+## Tech Stack
+
+- React Native
+- Expo
+- TypeScript
+- Expo Router
+- Axios
+- Expo SecureStore
+- React Native Toast Message
+- Node.js / Express REST API (backend)
+- Prisma and MongoDB (backend data layer)
+
+## Project Structure
+
+```text
+src/
+├── api.ts
+└── app/
+    ├── _layout.tsx
+    ├── index.tsx       # Login screen
+    ├── register.tsx    # Registration screen
+    └── dashboard.tsx   # Tasks dashboard
+```
+
+> The structure above reflects the current app layout. Your project may contain additional files.
+
+## Requirements
+
+- Node.js and npm
+- Expo Go for quick device testing, or an Android emulator/device
+- A running Task Management API backend
+
+## Installation
+
+1. Clone the repository:
+
+   ```bash
+   git clone https://github.com/YOUR_USERNAME/task-management-mobile.git
+   ```
+
+2. Enter the project folder:
+
+   ```bash
+   cd task-management-mobile
+   ```
+
+3. Install dependencies:
 
    ```bash
    npm install
    ```
 
-2. Start the app
+4. Configure the backend API URL in `src/api.ts`:
+
+   ```ts
+   const API_URL = "http://YOUR_COMPUTER_IP:5000/api";
+   ```
+
+   Replace `YOUR_COMPUTER_IP` with the computer's LAN IPv4 address when testing on a physical phone. The phone and computer should be connected to the same Wi-Fi network, and the backend must allow connections on port `5000`.
+
+   - Android emulator: `http://10.0.2.2:5000/api`
+   - Physical phone: use the computer's LAN IP, such as `http://192.168.1.10:5000/api` (example only)
+   - Production: use your deployed backend's HTTPS URL.
+
+5. Start the Expo development server:
 
    ```bash
    npx expo start
    ```
 
-In the output, you'll find options to open the app in a
+   To clear the Metro cache if needed:
 
-- [development build](https://docs.expo.dev/develop/development-builds/introduction/)
-- [Android emulator](https://docs.expo.dev/workflow/android-studio-emulator/)
-- [iOS simulator](https://docs.expo.dev/workflow/ios-simulator/)
-- [Expo Go](https://expo.dev/go), a limited sandbox for trying out app development with Expo
+   ```bash
+   npx expo start --clear
+   ```
 
-You can start developing by editing the files inside the **app** directory. This project uses [file-based routing](https://docs.expo.dev/router/introduction).
+## Backend API Endpoints
 
-## Get a fresh project
+The mobile app expects the backend to provide endpoints similar to these:
 
-When you're ready, run:
+| Method | Endpoint | Purpose |
+|---|---|---|
+| `POST` | `/api/auth/register` | Register a user |
+| `POST` | `/api/auth/login` | Sign in and receive a JWT |
+| `GET` | `/api/tasks` | Get the signed-in user's tasks |
+| `POST` | `/api/tasks` | Create a task |
+| `PATCH` | `/api/tasks/:id` | Update a task or completion status |
+| `DELETE` | `/api/tasks/:id` | Delete a task |
 
-```bash
-npm run reset-project
-```
+The task list supports pagination parameters such as `page` and `limit`, and may support a `search` query parameter depending on the backend implementation.
 
-This command will move the starter code to the **app-example** directory and create a blank **app** directory where you can start developing.
+## Build an Android APK
 
-### Other setup steps
+To create an installable Android APK with Expo Application Services (EAS):
 
-- To set up ESLint for linting, run `npx expo lint`, or follow our guide on ["Using ESLint and Prettier"](https://docs.expo.dev/guides/using-eslint/)
-- If you'd like to set up unit testing, follow our guide on ["Unit Testing with Jest"](https://docs.expo.dev/develop/unit-testing/)
-- Learn more about the TypeScript setup in this template in our guide on ["Using TypeScript"](https://docs.expo.dev/guides/typescript/)
+1. Sign in to Expo:
 
-## Learn more
+   ```bash
+   npx eas-cli login
+   ```
 
-To learn more about developing your project with Expo, look at the following resources:
+2. Configure EAS Build if it has not been configured yet:
 
-- [Expo documentation](https://docs.expo.dev/): Learn fundamentals, or go into advanced topics with our [guides](https://docs.expo.dev/guides).
-- [Learn Expo tutorial](https://docs.expo.dev/tutorial/introduction/): Follow a step-by-step tutorial where you'll create a project that runs on Android, iOS, and the web.
+   ```bash
+   npx eas-cli build:configure
+   ```
 
-## Join the community
+3. Add or check an APK build profile in `eas.json`:
 
-Join our community of developers creating universal apps.
+   ```json
+   {
+     "build": {
+       "preview": {
+         "distribution": "internal",
+         "android": {
+           "buildType": "apk"
+         }
+       },
+       "production": {}
+     }
+   }
+   ```
 
-- [Expo on GitHub](https://github.com/expo/expo): View our open source platform and contribute.
-- [Discord community](https://chat.expo.dev): Chat with Expo users and ask questions.
+4. Start the APK build:
+
+   ```bash
+   npx eas-cli build --platform android --profile preview
+   ```
+
+EAS will provide a build page and download link when the build completes.
+
+## Security Notes
+
+- Do not commit `.env` files, MongoDB credentials, JWT secrets, access tokens, or other secrets to GitHub.
+- Do not use a private computer LAN IP for a publicly distributed app. Configure a reachable HTTPS backend URL for production.
+- Keep authentication and authorization checks on the backend; hiding screens in the app is not a substitute for API security.
+
+## License
+
+Add a license here if you intend to distribute this project publicly. Until a license is added, no additional license is specified.
